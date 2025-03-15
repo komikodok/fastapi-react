@@ -1,7 +1,6 @@
 from fastapi import HTTPException, status
 from firebase_admin.exceptions import (
     FirebaseError,
-    NotFoundError,
     InvalidArgumentError,
     UnavailableError,
     DeadlineExceededError,
@@ -11,14 +10,14 @@ from google.cloud.exceptions import NotFound
 from pydantic import ValidationError
 
 
-def exception_handler(exc):
-    match exc:
+def exception_handler(e):
+    match e:
         case FirebaseError():
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                detail="An internal Firebase error occurred"
+                detail="An internal Firebase occurred"
             )
-        case NotFoundError() | NotFound():
+        case NotFound():
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
                 detail="Resource not found"

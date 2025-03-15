@@ -1,32 +1,41 @@
-from client.db_client import get_db
+from fastapi import Depends
+from google.cloud.exceptions import NotFound
+from google.cloud import firestore
 from typing import List, Dict
+from client.db_client import get_db
 from .base import BaseRepository
 
 class UserRepository(BaseRepository):
     
-    def __init__(self, db=get_db):
+    def __init__(self, db: firestore.Client = Depends(get_db)):
         self.__collection = db.collection("users")
 
     def index(self, filter: dict | None = None) -> List[Dict[str, any]]:
-        docs = self.__collection
+        docs_ref = self.__collection
         if filter:
             for key, value in filter.items():
-                docs = docs.where(key, "==", value)
-        return docs.get()
+                docs_ref = docs_ref.where(key, "==", value)
+        docs = docs_ref.get()
+        return docs
 
     def show(self, id: str) -> Dict[str, any]:
-        doc = self.__collection.document(id)
-        return doc.get()
+        doc_ref = self.__collection.document(id)
+        doc = doc_ref.get()
+        if not doc.exists:
+            raise NotFound(f"User with id {id} is not found")
+        return doc
     
     def store(self, data: dict | None = None, **kwargs):
         data = data or kwargs
-        doc, _ = self.__collection.add(data)
-        return doc.get()
+        doc_ref, _ = self.__collection.add(data)
+        doc = doc_ref.get()
+        return doc
     
     def update(self, id: str, **kwargs):
-        doc = self.__collection.document(id)
-        doc = doc.update(**kwargs)
-        return doc.get()
+        doc_ref = self.__collection.document(id)
+        doc_ref = doc_ref.update(**kwargs)
+        doc = doc_ref.get()
+        return doc
     
     def delete(self, id: str):
         doc = self.__collection.document(id)

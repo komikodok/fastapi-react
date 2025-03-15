@@ -9,7 +9,7 @@ load_dotenv(find_dotenv())
 
 path = os.getenv("PATH_SERVICE_KEY")
 service_key = glob(path, recursive=True)
-cred = credentials.Certificate(service_key)
+cred = credentials.Certificate(service_key[0])
 firebase_admin.initialize_app(cred)
 
 db = firestore.client()
