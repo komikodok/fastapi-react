@@ -27,13 +27,15 @@ class UserRepository(BaseRepository):
     
     def store(self, data: dict | None = None, **kwargs):
         data = data or kwargs
-        doc_ref, _ = self.__collection.add(data)
+        doc_ref = self.__collection.document()
+        doc_ref.set(data)
         doc = doc_ref.get()
         return doc
     
     def update(self, id: str, **kwargs):
         doc_ref = self.__collection.document(id)
-        doc_ref = doc_ref.update(**kwargs)
+        if doc_ref.exists:
+            doc_ref.update(**kwargs)
         doc = doc_ref.get()
         return doc
     

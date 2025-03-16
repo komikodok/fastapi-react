@@ -1,11 +1,11 @@
 from typing import List
-from google.cloud.firestore import DocumentReference
+from google.cloud.firestore import DocumentSnapshot
 from itertools import starmap
 
 
 class BaseSerializer:
 
-    def __init__(self, doc_ref: List[DocumentReference] | DocumentReference):
+    def __init__(self, doc_ref: List[DocumentSnapshot] | DocumentSnapshot):
         self.doc_ref = doc_ref
 
     @property

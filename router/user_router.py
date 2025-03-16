@@ -50,7 +50,7 @@ def create_user(
     user_repository: UserRepository = Depends(),
 ):
     try:
-        doc = user_repository.store(user)
+        doc = user_repository.store(user.dict())
         created_data = UserSerializer(doc).data
     except Exception as e:
         exception_handler(e)
