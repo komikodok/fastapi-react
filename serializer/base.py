@@ -9,24 +9,23 @@ class BaseSerializer:
         self.doc_snaps = doc_snaps
 
     @property
-    def data(self):
-        fields = self.Meta.fields
-        
+    def data(self):        
         if isinstance(self.doc_snaps, list):
             docs = self.doc_snaps
             to_dict = lambda doc: {"id": doc.id, **doc.to_dict()}
             datas = list(map(to_dict, docs))
 
-            def filter_list_data(data: dict):
-                filter_field = lambda field, value: (field, value) if field in fields else None
-                filter_data = list(filter(None, list(starmap(filter_field, data.items()))))
-                return dict(filter_data)
-
-            filter_datas = list(map(filter_list_data, datas))
+            filter_datas = list(map(self.filter_data_by_field, datas))
             return filter_datas
 
         doc = self.doc_snaps
         data = {"id": doc.id, **doc.to_dict()}
+
+        filter_data = self.filter_data_by_field(data)
+        return filter_data
+    
+    def filter_data_by_field(self, data: dict):
+        fields = self.Meta.fields
 
         filter_field = lambda field, value: (field, value) if field in fields else None
         filter_data = list(filter(None, list(starmap(filter_field, data.items()))))

@@ -25,14 +25,14 @@ class UserRepository(BaseRepository):
             raise NotFound(f"User with id {id} is not found")
         return doc
     
-    def store(self, data: dict | None = None, **kwargs):
+    def store(self, data: dict | None = None, **kwargs) -> Dict[str, any]:
         data = data or kwargs
         doc_ref = self.__collection.document()
         doc_ref.set(data)
         doc = doc_ref.get()
         return doc
     
-    def update(self, id: str, **kwargs):
+    def update(self, id: str, **kwargs) -> Dict[str, any]:
         doc_ref = self.__collection.document(id)
         if doc_ref.exists:
             doc_ref.update(**kwargs)
